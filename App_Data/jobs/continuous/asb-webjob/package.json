@@ -1,0 +1,22 @@
+{
+  "name": "asb-webjob",
+  "version": "1.0.0",
+  "description": "",
+  "main": "listener.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DJBnjack/asb-webjob.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DJBnjack/asb-webjob/issues"
+  },
+  "homepage": "https://github.com/DJBnjack/asb-webjob#readme",
+  "dependencies": {
+    "azure": "^1.1.1-preview"
+  }
+}
