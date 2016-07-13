@@ -26,6 +26,10 @@ var port = process.env.PORT || 8000;
    docs: '/swagger/docs/v1'  
  }));
 
+app.get('/', function(req, res){
+  res.send(process.env);
+});
+
  server.listen(port, function () {
      app.setHost(undefined); // change five
  });
