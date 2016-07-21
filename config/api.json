@@ -1,53 +1,61 @@
 {
-	"swagger": "2.0",
-	"info": {
-		"version": "v1",
-		"title": "Message API",
-    	"description": "A message API, for filling the message queue and reading the stored messages"
-	},
-	"host": "localhost",
-	"schemes": ["http", "https"],
-  	"basePath": "/",
-	"paths": {
-		"/queue/{sender}": {
-			"post": {
-				"tags": ["Queue"],
-				"summary": "Add a new message to the queue",
-				"operationId": "queue_post",
-				"consumes": ["multipart/form-data"],
-				"produces": ["application/json", "text/json"],
-				"parameters": [
-					{
-						"name": "sender",
-						"description": "Sender of the message",
-						"required": false,
-						"type": "string",
-						"in": "path",
-						"allowMultiple": false
-					},
-					{
-						"name": "message",
-						"description": "xml file of the message",
-						"required": false,
-						"paramType": "body",
-						"dataType": "file",
-						"allowMultiple": false
-                	}
-				]
-			}
-		}
-	},
-	"definitions": {
-		"MessageToAdd": {
-			"type": "object",
-			"properties": {
-				"sender": {
-					"type": "string"
-				},
-				"xml": {
-					"type": "string"
-				}
-			}
-		}
-	}
+    "swagger": "2.0",
+    "info": {
+        "version": "v1",
+        "title": "Message API",
+        "description": "A message API, for filling the message queue and reading the stored messages"
+    },
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "basePath": "/",
+    "paths": {
+        "/queue": {
+            "post": {
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Add a new message to the queue",
+                "operationId": "queue_post",
+                "consumes": [
+                    "application/json",
+                    "text/json"
+                ],
+                "produces": [
+                    "application/json",
+                    "text/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "message",
+                        "in": "body",
+                        "description": "Message info",
+                        "schema": {
+                            "$ref": "#/definitions/Message"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Added message to queue"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Message": {
+            "type": "object",
+            "properties": {
+                "sender": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

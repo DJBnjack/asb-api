@@ -25,13 +25,12 @@ app.use(swaggerize({
 }));
 
 app.use('/swagger', swaggerUi({
-  docs: '/swagger/docs/v1'  
+  docs: '/swagger/docs/v1',
+  port: port
 }));
 
 app.get('/', function(req, res){
   res.send('Hello! This API is running: <br>Release: ' + release + '<br>Environment: ' + env + '<br>Queue: ' + queue + '<br><a href="/swagger">Swagger</a>');
 });
 
-server.listen(port, function () {
-  app.setHost(undefined);
-});
+server.listen(port, function () {});
