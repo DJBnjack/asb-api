@@ -29,7 +29,7 @@ app.use('/swagger', swaggerUi({
 }));
 
 app.get('/', function(req, res){
-  res.send('Hello! This API is running: <br>Release: ' + release + '<br>Environment: ' + env + '<br>Queue: ' + queue);
+  res.send('Hello! This API is running: <br>Release: ' + release + '<br>Environment: ' + env + '<br>Queue: ' + queue + '<br><a href="/swagger">Swagger</a>');
 });
 
 server.listen(port, function () {
