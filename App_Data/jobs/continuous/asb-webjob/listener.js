@@ -1,13 +1,20 @@
 console.log('listener job started');
 var azure = require('azure');
+var azureStorage = require('azure-storage');
+var parseString = require('xml2js').parseString;
+
 var connStr = process.argv[2] || process.env.CONNECTION_STRING;
 if (!connStr) throw new Error('Must provide connection string to queue');
 
 var queueName = process.argv[3] || process.env.APPSETTING_queue;
 if (!queueName) throw new Error('Must provide queue name');
 
+var dbEndpoint = process.argv[4] || process.env.APPSETTING_document_uri;
+var dbPrimayKey = process.argv[5] || process.env.APPSETTING_document_key;
+
 var serviceBus = azure.createServiceBusService(connStr);
 listenForMessages(serviceBus);
+var client = new documentClient(dbEndpoint, { "masterKey": dbPrimayKey });
 
 function listenForMessages(serviceBus)
 {
@@ -25,12 +32,19 @@ function listenForMessages(serviceBus)
 
         } else {
 
-            // Update validation
             if (message !== null && typeof message === 'object' && 'customProperties' in message && 'sender' in message.customProperties) {
 
                 console.log('received message from ' + message.customProperties.sender.toString());
-                console.dir(message);
-                // Add message to documentdb
+                parseString(message.body, function (err, result) {
+                    if (err){
+                        console.log('Error parsing body: ' + err);
+                    } else {
+                        // Output shows [Object], correct??
+                        console.dir(result);
+                    }
+                });
+
+                // Add message to azure tables
                 
                 listenForMessages(serviceBus);
 

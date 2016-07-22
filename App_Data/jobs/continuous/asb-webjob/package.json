@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/DJBnjack/asb-webjob#readme",
   "dependencies": {
-    "azure": "^1.1.1-preview"
+    "azure": "^1.1.1-preview",
+    "azure-storage": "^1.1.0",
+    "xml2js": "0.4.17"
   }
 }

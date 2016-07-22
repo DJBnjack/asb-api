@@ -18,6 +18,7 @@ module.exports = {
                 sender: sender
             }
         };
+
         serviceBusService.sendQueueMessage(queueName, message, function(error){
             if(!error) {
                 console.dir("Added message to queue.");
@@ -26,7 +27,7 @@ module.exports = {
             }
         });
         
-        console.dir(content);
+        // console.dir(content);
         res.status(201).json(content);
     }
 };
