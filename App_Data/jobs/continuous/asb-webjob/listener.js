@@ -3,18 +3,17 @@ var azure = require('azure');
 var azureStorage = require('azure-storage');
 var parseString = require('xml2js').parseString;
 
-var connStr = process.argv[2] || process.env.CONNECTION_STRING;
+var connStr = process.env.CONNECTION_STRING;
 if (!connStr) throw new Error('Must provide connection string to queue');
 
-var queueName = process.argv[3] || process.env.APPSETTING_queue;
+var queueName = process.env.APPSETTING_queue;
 if (!queueName) throw new Error('Must provide queue name');
-
-var dbEndpoint = process.argv[4] || process.env.APPSETTING_document_uri;
-var dbPrimayKey = process.argv[5] || process.env.APPSETTING_document_key;
 
 var serviceBus = azure.createServiceBusService(connStr);
 listenForMessages(serviceBus);
-var client = new documentClient(dbEndpoint, { "masterKey": dbPrimayKey });
+
+// Uses env variables AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_ACCESS_KEY, or AZURE_STORAGE_CONNECTION_STRING for information
+var tableSvc = azureStorage.createTableService();
 
 function listenForMessages(serviceBus)
 {
@@ -35,12 +34,13 @@ function listenForMessages(serviceBus)
             if (message !== null && typeof message === 'object' && 'customProperties' in message && 'sender' in message.customProperties) {
 
                 console.log('received message from ' + message.customProperties.sender.toString());
-                parseString(message.body, function (err, result) {
+                xml = message.body.replace('\\r\\n','');
+                parseString(xml, function (err, result) {
                     if (err){
                         console.log('Error parsing body: ' + err);
                     } else {
-                        // Output shows [Object], correct??
-                        console.dir(result);
+                        console.log(JSON.stringify(result, null, 2));
+                        // console.dir(message);
                     }
                 });
 
