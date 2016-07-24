@@ -2,7 +2,7 @@
 var azureStorage = require('azure-storage');
 var tableSvc = azureStorage.createTableService();
 
-['asbAchiveLocal', 'asbAchiveDev', 'asbAchiveTest', 'asbAchiveAcc', 'asbAchive'].forEach(function (item) {
+['asbArchiveLocal', 'asbArchiveDev', 'asbArchiveTest', 'asbArchiveAcc', 'asbArchive'].forEach(function (item) {
 
   tableSvc.createTableIfNotExists(item, function(error, result, response){
     if(error){

@@ -14,6 +14,7 @@ listenForMessages(serviceBus);
 
 // Uses env variables AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_ACCESS_KEY, or AZURE_STORAGE_CONNECTION_STRING for information
 var tableSvc = azureStorage.createTableService();
+var tableName = process.env.AZURE_TABLE_NAME;
 
 var sql = require('mssql');
 var sqlTable = process.env.AZURE_SQL_TABLE;
@@ -30,7 +31,14 @@ var config = {
 
 function addToStorage(msg, id, cb)
 {
+    var entGen = azure.TableUtilities.entityGenerator;
+    var message = {
+        PartitionKey: entGen.String(String(id)),
+        RowKey: entGen.String(''),
+        Message: entGen.String(JSON.stringify(msg))
+    };
 
+    tableSvc.insertEntity(tableName, message, cb);
 }
 
 function addToDatabase(msg, cb)
@@ -92,22 +100,24 @@ function listenForMessages(serviceBus)
 
                 console.log('received message from ' + message.customProperties.sender.toString());
                 xml = message.body.replace('\\r\\n','');
-                parseString(xml, function (err, result) {
+                parseString(xml, function (err, msg) {
                     if (err){
                         console.log('Error parsing body: ' + err);
                     } else {
                         
                         // Add meta-info to SQL database
-                        addToDatabase(result, function(id){
+                        addToDatabase(msg, function(id){
 
                             // Add message to azure tables
-                            addToStorage(msg, id, function(err) {
+                            addToStorage(msg, id, function(err, result, response) {
 
                                 if (err)
                                 {
                                     console.dir(err);
                                 } else {
                                     console.log('Added msg to database and storage.');
+                                    console.dir(result);
+                                    console.dir(response);
                                 }
 
                             });
