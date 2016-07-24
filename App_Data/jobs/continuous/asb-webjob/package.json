@@ -19,6 +19,7 @@
   "dependencies": {
     "azure": "^1.1.1-preview",
     "azure-storage": "^1.1.0",
+    "mssql": "^3.3.0",
     "xml2js": "0.4.17"
   }
 }

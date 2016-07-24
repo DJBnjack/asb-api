@@ -21,7 +21,7 @@ module.exports = {
 
         serviceBusService.sendQueueMessage(queueName, message, function(error){
             if(!error) {
-                console.dir("Added message to queue.");
+                console.log("Added message to queue.");
             } else {
                 console.dir(error);
             }

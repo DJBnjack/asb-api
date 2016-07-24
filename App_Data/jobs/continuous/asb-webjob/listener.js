@@ -15,6 +15,63 @@ listenForMessages(serviceBus);
 // Uses env variables AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_ACCESS_KEY, or AZURE_STORAGE_CONNECTION_STRING for information
 var tableSvc = azureStorage.createTableService();
 
+var sql = require('mssql');
+var sqlTable = process.env.AZURE_SQL_TABLE;
+var config = {
+    user: process.env.AZURE_SQL_USER,
+    password: process.env.AZURE_SQL_PASS,
+    server: process.env.AZURE_SQL_SERVER, 
+    database: process.env.AZURE_SQL_DB,
+ 
+    options: {
+        encrypt: true // Use this if you're on Azure 
+    }
+};
+
+function addToStorage(msg, id, cb)
+{
+
+}
+
+function addToDatabase(msg, cb)
+{
+    var request = msg['ns0:request'].$['xmlns:ns0'];
+    var sender = msg['ns0:request']['ns0:header'][0]['ns1:afzender'][0]._;
+    var customerId = msg['ns0:request']['ns0:klanten'][0]['ns0:klant'][0]['ns0:klantId'][0]._;
+    var dateTime = new Date(msg['ns0:request']['ns0:header'][0]['ns1:aanroepDatumTijd'][0]._);
+
+    // Add index to SQL & get ID
+    var query = 'INSERT INTO [' + sqlTable + '] ';
+    query = query + 'OUTPUT Inserted.ID ';
+    query = query + 'VALUES (N\''+ request +'\', N\'' + sender + '\',\'' + customerId + '\',\'' + dateTime.toISOString() + '\')';
+
+    var connection1 = new sql.Connection(config, function(err) {
+
+        if (err) {
+            console.dir(err);
+        } else {
+    
+            var request = new sql.Request(connection1); 
+            // request.verbose = true; // - To see more info on the SQL request
+            request.query(query, function(err, recordset) {
+                if (err) {
+                    console.dir(err);
+                } else {
+
+                    // Give ID
+                    cb(recordset[0].ID);
+
+                }
+            });
+        
+        }
+    });
+    
+    connection1.on('error', function(err) {
+        console.dir(err);
+    });
+}
+
 function listenForMessages(serviceBus)
 {
     var start = process.hrtime();
@@ -39,12 +96,24 @@ function listenForMessages(serviceBus)
                     if (err){
                         console.log('Error parsing body: ' + err);
                     } else {
-                        console.log(JSON.stringify(result, null, 2));
-                        // console.dir(message);
+                        
+                        // Add meta-info to SQL database
+                        addToDatabase(result, function(id){
+
+                            // Add message to azure tables
+                            addToStorage(msg, id, function(err) {
+
+                                if (err)
+                                {
+                                    console.dir(err);
+                                } else {
+                                    console.log('Added msg to database and storage.');
+                                }
+
+                            });
+                        });
                     }
                 });
-
-                // Add message to azure tables
                 
                 listenForMessages(serviceBus);
 
