@@ -6,7 +6,7 @@ var parseString = require('xml2js').parseString;
 var connStr = process.env.CONNECTION_STRING;
 if (!connStr) throw new Error('Must provide connection string to queue');
 
-var queueName = process.env.APPSETTING_queue;
+var queueName = process.env.queue;
 if (!queueName) throw new Error('Must provide queue name');
 
 var serviceBus = azure.createServiceBusService(connStr);

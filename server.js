@@ -1,9 +1,9 @@
 'use strict';
 
 var port = process.env.PORT || 8000;
-var env = process.env.APPSETTING_env || "local";
-var queue = process.env.APPSETTING_queue || "asb-queue-dev";
-var release = process.env.APPSETTING_release || "undefined";
+var env = process.env.env || "local";
+var queue = process.env.queue || "asb-queue-dev";
+var release = process.env.release || "undefined";
 
 var http = require('http');
 var express = require('express');
